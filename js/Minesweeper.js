@@ -1,11 +1,14 @@
 'use strict'
-
 var gBoard;
 const MINE = 'X';
 const FLAG = 'F';
 const SHOWN = 'S';
 var gStack = [];
 var gLastMoves = [];
+var gLifeCtr = 3;
+var gMinesCreated = false;
+var gMarkedMines = 0;
+var gShownCells = 0;
 
 var gGame = {
     isOn: false,
@@ -34,8 +37,12 @@ function init() {
         event.preventDefault()
     })
     gBoard = buildBoard();
+    createRandomMines();
     setMinesNegsCount(gBoard);
-    renderBoard(gBoard);
+    if (!gMinesCreated) {
+        renderBoard(gBoard);
+        gMinesCreated = true;
+    }
 }
 
 
@@ -46,9 +53,6 @@ function buildBoard() {
         for (var j = 0; j < gLevel.SIZE; j++) {
             var cell = createCell();
             board[i][j] = cell;
-            if (i === 0 && j === 0 || i === 1 && j === 1) {
-                cell.isMine = true;
-            }
         }
     }
     return board;
@@ -63,6 +67,7 @@ function renderBoard(board) {
             if (cell.isMarked && !cell.isShown) {
                 strHTML += `<td data-i="${i}" data-j="${j}" oncontextmenu="markCell(this,${i} ,${j})"
                 onclick="cellClicked(this,${i} ,${j})"><span>${FLAG}</span></td>`;
+                console.log("here");
             } else if (!cell.isShown) {
                 strHTML += `<td . data-i="${i}" data-j="${j}"  oncontextmenu="markCell(this,${i} ,${j})"
                 onclick="cellClicked(this,${i} ,${j})"></td>`;
@@ -83,31 +88,26 @@ function renderBoard(board) {
 
 function cellClicked(elCell, cellI, cellJ) {
     var currentCell = gBoard[cellI][cellJ];
-    if (currentCell.isShown || currentCell.isMarked) return;
-    if (currentCell.isMine) {
-        elCell.innerText = MINE;
-        currentCell.isShown = true;
-    } else { expandShown(cellI, cellJ); }
-    //gStack.push(gLastMoves);
-    gLastMoves = [];
-    console.log(currentCell);
-    renderBoard(gBoard);
-}
-
-function markCell(elCell, cellI, cellJ) {
-    var currentCell = gBoard[cellI][cellJ];
+    // if (!gMinesCreated) {
+    //     createRandomMines();
+    //     renderBoard(gBoard);
+    //     gMinesCreated = true;
+    // }
     if (currentCell.isShown) return;
-    console.log("here");
-    renderCellMarked(elCell, cellI, cellJ);
+    if (!currentCell.isMine) {
+        expandShown(gBoard, cellI, cellJ);
+        gShownCells++;
+        currentCell.isShown = true;
+    } else {
+        currentCell.isShown = true;
+    }
+    gStack.push(gLastMoves);
+    gLastMoves = [];
+    renderBoard(gBoard);
+    checkGameOver();
 }
 
-function renderCellMarked(elCell, cellI, cellJ) {
-    var strHTML = "";
-    strHTML = `<td data-i="${cellI}" data-j="${cellJ}" oncontextmenu="markCell(this,${cellI} ,${cellJ})"
-     onclick="cellClicked(this,${cellI} ,${cellJ})"><span>${FLAG}</span></td>`;
-    elCell.isMarked = true;
-    elCell.innerHTML = strHTML;
-}
+
 
 function setMinesNegsCount(board) {
     for (var i = 0; i < board.length; i++) {
@@ -141,48 +141,62 @@ function getCell(i, j) {
     return gBoard[i][j];
 }
 
-function expandShown(i, j) {
-    if (gBoard[i][j].isMine === false) {
-        gBoard[i][j].isShown = true;
+function expandShown(board, i, j) {
+    if (board[i][j].isMine === false) {
+        board[i][j].isShown = true;
         gLastMoves.push({ locationI: i, locationJ: j });
     }
-    if (gBoard[i][j].minesAroundCount !== 0 || gBoard[i][j].isMine === true) {
+    if (board[i][j].minesAroundCount !== 0 || board[i][j].isMine === true) {
         return;
     }
-    if (getCell(i, j + 1) !== null && gBoard[i][j + 1].isShown === false) {
-        expandShown(i, j + 1);
+    if (getCell(i, j + 1) !== null && board[i][j + 1].isShown === false) {
+        expandShown(board, i, j + 1);
     }
-    if (getCell(i + 1, j) !== null && gBoard[i + 1][j].isShown === false) {
-        expandShown(i + 1, j);
+    if (getCell(i + 1, j) !== null && board[i + 1][j].isShown === false) {
+        expandShown(board, i + 1, j);
     }
-    if (getCell(i + 1, j + 1) !== null && gBoard[i + 1][j + 1].isShown === false) {
-        expandShown(i + 1, j + 1);
+    if (getCell(i + 1, j + 1) !== null && board[i + 1][j + 1].isShown === false) {
+        expandShown(board, i + 1, j + 1);
     }
-    if (getCell(i - 1, j + 1) !== null && gBoard[i - 1][j + 1].isMine === false) {
-        expandShown(i - 1, j + 1);
+    if (getCell(i - 1, j + 1) !== null && board[i - 1][j + 1].isMine === false) {
+        expandShown(board, i - 1, j + 1);
     }
-    if (getCell(i - 1, j) !== null && gBoard[i - 1][j].isShown === false) {
-        expandShown(i - 1, j);
+    if (getCell(i - 1, j) !== null && board[i - 1][j].isShown === false) {
+        expandShown(board, i - 1, j);
     }
-    if (getCell(i + 1, j - 1) !== null && gBoard[i + 1][j - 1].isShown === false) {
-        expandShown(i + 1, j - 1);
+    if (getCell(i + 1, j - 1) !== null && board[i + 1][j - 1].isShown === false) {
+        expandShown(board, i + 1, j - 1);
     }
-    if (getCell(i - 1, j - 1) !== null && gBoard[i - 1][j - 1].isShown === false) {
-        expandShown(i - 1, j - 1);
+    if (getCell(i - 1, j - 1) !== null && board[i - 1][j - 1].isShown === false) {
+        expandShown(board, i - 1, j - 1);
     }
-    if (getCell(i, j - 1) !== null && gBoard[i][j - 1].isShown === false) {
-        expandShown(i, j - 1);
+    if (getCell(i, j - 1) !== null && board[i][j - 1].isShown === false) {
+        expandShown(board, i, j - 1);
     }
 }
 
-function reveal(elCell, i, j, value) {
-    (value === MINE) ? elCell.innerText = MINE : str = gBoard[i][j].minesAroundCount;
-    gBoard[i][j].isShown = true;
-}
 
 
-function renderCell(i, j, value) {
-    var cellSelector = '.' + getClassName(location)
+
+function renderCell(i, j) {
+    var strHTML = `<td data-i="${i}" data-j="${j}" oncontextmenu="markCell(this,${i} ,${j})"
+    onclick="cellClicked(this,${i} ,${j})"><span>${cell.minesAroundCount}</span></td>`;
     var elCell = document.querySelector(cellSelector);
-    elCell.innerHTML = value;
+    elCell.innerHTML = strHTML;
+}
+
+function checkGameOver() {
+    if (gMarkedMines === gLevel.MINES) {
+        for (var i = 0; i < gLevel.SIZE; i++) {
+            for (var j = 0; j < gLevel.SIZE; j++) {
+                console.log(gBoard[i][j].isShown);
+                if (!gBoard[i][j].isShown && !gBoard[i][j].isMarked) {
+                    console.log("not over");
+                    return;
+                }
+            }
+        }
+        console.log("won");
+    }
+
 }

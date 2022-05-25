@@ -18,6 +18,33 @@ function boardSize() {
     }
 }
 
+function createRandomMines() {
+    var randomMines = [];
+    var location = {
+        i: 3,
+        j: 5
+    };
+    var randomMines;
+    console.log(location);
+    for (var i = 0; i < gLevel.SIZE; i++) {
+        for (var j = 0; j < gLevel.SIZE; j++) {
+            if (!gBoard[i][j].isShown) {
+                location = {
+                    i: i,
+                    j: j
+                };
+                randomMines.push(location);
+            }
+        }
+    }
+    if (randomMines.length < 1) return; // no random cell
+    for (var i = 0; i < gLevel.MINES; i++) {
+        var j = 16;
+        var rand = getRandomInt(0, j--);
+        gBoard[randomMines[rand].i][randomMines[rand].j].isMine = true;
+        console.log(gBoard[randomMines[i].i][randomMines[i].j]);
+    }
+}
 
 
 function timeToString(time) {
@@ -41,4 +68,6 @@ function timeToString(time) {
 }
 
 
-
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}

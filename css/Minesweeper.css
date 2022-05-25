@@ -30,7 +30,7 @@ td:hover{
 }
 
 .stop-watch {
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 30px;
     position: absolute;
     right: 5%;

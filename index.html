@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/Minesweeper.css">
+    <title>Document</title>
+</head>
+<body onload="init()">
+    <h1>MINESWEAPER IN SPACE</h1>
+    <div class="stop-watch"></div>
+    <button class="hint-btn" onclick="getRandomMine(this)">&#128161</button>
+    <button class="hint-btn" onclick="getRandomMine(this)">&#128161</button>
+    <button class="hint-btn" onclick="getRandomMine(this)">&#128161</button>
+    <div class="smiley">&#128512</div>
+    <div class="radio" onclick="boardSize(this)">
+        <input type="radio" name="game-size" id="4" data-i="2" checked>
+        <label for="16">16</label>
+        <input type="radio" name="game-size" id="5" data-i="5">
+        <label for="25">25</label>
+        <input type="radio" name="game-size" id="6" data-i="7">
+        <label for="36">36</label>
+    </div>
+    <div class="lives">&#10084 &#10084 &#10084</div>
+    <table>
+        <tbody>
+
+        </tbody>
+    </table>
+    <button onclick="init()">restart</button>
+    <script src="/js/Minesweeper.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/maekcell.js"></script>
+    <script src="/js/mines.js"></script>
+    <script src="/js/game.js"></script>
+</body>
+</html>

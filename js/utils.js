@@ -1,51 +1,20 @@
+var gTimerInterval;
 
 
-function renderCell(location, value) {
-    var cellSelector = '.' + getClassName(location)
-    var elCell = document.querySelector(cellSelector);
-    elCell.innerHTML = value;
+function getCellSelector(i, j) {
+    return `[data-i="${i}"][data-j="${j}"]`;
+
 }
 
-function boardSize() {
-    elRadios = [];
-    elRadios = document.querySelectorAll(`[name="game-size"]`)
-    for (var i = 0; i < elRadios.length; i++) {
-        if (elRadios[i].checked) {
-            gNumAmount = elRadios[i].id;
-            init();
-        }
-        console.log("id", gNumAmount)
+function createCell() {
+    var cell = {
+        minesAroundCount: 0,
+        isShown: false,
+        isMine: false,
+        isMarked: false
     }
+    return cell;
 }
-
-function createRandomMines() {
-    var randomMines = [];
-    var location = {
-        i: 3,
-        j: 5
-    };
-    var randomMines;
-    console.log(location);
-    for (var i = 0; i < gLevel.SIZE; i++) {
-        for (var j = 0; j < gLevel.SIZE; j++) {
-            if (!gBoard[i][j].isShown) {
-                location = {
-                    i: i,
-                    j: j
-                };
-                randomMines.push(location);
-            }
-        }
-    }
-    if (randomMines.length < 1) return; // no random cell
-    for (var i = 0; i < gLevel.MINES; i++) {
-        var j = 16;
-        var rand = getRandomInt(0, j--);
-        gBoard[randomMines[rand].i][randomMines[rand].j].isMine = true;
-        console.log(gBoard[randomMines[i].i][randomMines[i].j]);
-    }
-}
-
 
 function timeToString(time) {
     var diffInHrs = time / 3600000;
@@ -71,3 +40,21 @@ function timeToString(time) {
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
+
+
+function startWatch() {
+    var elapsedTime = 0;
+    var startTime = Date.now() - elapsedTime;
+    var elStopWatch = document.querySelector(".stop-watch");
+    gTimerInterval = setInterval(function printTime() {
+        elapsedTime = Date.now() - startTime;
+        elStopWatch.innerText = timeToString(elapsedTime);
+    }, 10);
+}
+
+function preventLeftClick() {
+    window.addEventListener('contextmenu', (event) => {
+        event.preventDefault()
+    })
+}
+

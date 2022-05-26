@@ -4,10 +4,10 @@ function markCell(elCell, cellI, cellJ) {
     var currentCell = gBoard[cellI][cellJ];
     if (currentCell.isShown) return;
     if (currentCell.isMine) {
-        gMarkedMines++;
+        ++gMarkedMines;
         currentCell.isMarked = true;
     } else if (currentCell.isMine && currentCell.isMarked) {
-        gMarkedMines--;
+        --gMarkedMines;
         currentCell.isMarked = false;
     } else if (currentCell.isMarked) {
         currentCell.isMarked = false;

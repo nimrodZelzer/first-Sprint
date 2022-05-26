@@ -17,9 +17,10 @@ function saveLAstMove() {
 function checkGameOver() {
     console.log("gMarkedMines", gMarkedMines);
     console.log("gLevel.MINES", gLevel.MINES);
-    if (gMarkedMines === gLevel.MINES) {
+    if (gMarkedMines == gLevel.MINES) {
         var elSmiley = document.querySelector('.smiley')
         elSmiley.innerHTML = `&#x1F60E;`;
+        console.log("here");
         stopGame();
     }
 

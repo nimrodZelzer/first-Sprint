@@ -124,7 +124,7 @@ function expandShown(board, i, j) {
         board[i][j].isShown = true;
         elCell.isShown = true;
     }
-    if (board[i][j].minesAroundCount !== 0 || board[i][j].isMine === true) {
+    if (board[i][j].minesAroundCount !== 0 || board[i][j].isMine === true || board[i][j].isMarked) {
         return;
     }
     if (!checkCell(i, j + 1) && board[i][j + 1].isShown === false) {
